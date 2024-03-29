@@ -1,4 +1,7 @@
+#install.packages("HoRM") Функция Хилдрета-Лу
+library('HoRM')
 library('lmtest')
+
 fn <- "D:/Study/Матметоды/ПР5/data/flats_moscow.txt"
 (h <- read.table(fn,header=TRUE))
 h
@@ -19,7 +22,22 @@ summary(mod_resid)
 abline(mod_resid, col="blue")
 #как будто бы немножко есть автокорреляция
 
-dwtest(mod_car) # Durbin-Watson test
+dwtest(model) # Durbin-Watson test
 #DW < du => положительная кореляция, отвергаем H0 => автокорреляция есть
-bgtest(mod_car, order = 2) #=> не отвергаем отсутствие автокор.
-bgtest(mod_car, order = 1) #автокорреляция есть
+bgtest(model, order = 2) #=> не отвергаем отсутствие автокор.
+bgtest(model, order = 1) #автокорреляция есть
+
+#https://rpubs.com/apricitea/handling-autocorrelation
+r <- c(seq(-1,0.8, by= 0.1), seq(0.9,0.99, by= 0.01))
+tab <- data.frame("rho" = r, "SSE" = sapply(r, function(i){deviance(hildreth.lu.func(i, model))}))
+optrho <- which.min(round(tab, 4)[,2])
+round(tab, 4)[optrho,]
+#plot(tab)
+
+model2 <- lm(price ~  dist, data=h)
+tab <- data.frame("rho" = r, "SSE" = sapply(r, function(i){deviance(hildreth.lu.func(i, model2))}))
+optrho <- which.min(round(tab, 4)[,2])
+round(tab, 4)[optrho,]
+#Returns the linear regression fit for a given level of rho using the Hildreth-Lu procedure
+out.1 <- hildreth.lu(h$price, h$dist, 0)
+out.1     
