@@ -43,3 +43,11 @@ summary(m2)
 confint(m2)
 vcov(m2) > 1
 bptest(m2,studentize=FALSE)
+
+
+#----------2---------------------
+df <- read.table("clipboard", dec='.', header=T)
+df
+
+model = lm(фев ~ янв, data=df)
+summary(model)
