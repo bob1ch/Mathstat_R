@@ -28,6 +28,18 @@ bgtest(model, order = 2) #=> не отвергаем отсутствие авт
 bgtest(model, order = 1) #автокорреляция есть
 
 #https://rpubs.com/apricitea/handling-autocorrelation
+
+hildreth.lu.func<- function(r, model){
+  x <- model.matrix(model)[,-1]
+  y <- model.response(model.frame(model))
+  n <- length(y)
+  t <- 2:n
+  y <- y[t]-r*y[t-1]
+  x <- x[t]-r*x[t-1]
+  
+  return(lm(y~x))
+}
+
 r <- c(seq(-1,0.8, by= 0.1), seq(0.9,0.99, by= 0.01))
 tab <- data.frame("rho" = r, "SSE" = sapply(r, function(i){deviance(hildreth.lu.func(i, model))}))
 optrho <- which.min(round(tab, 4)[,2])
